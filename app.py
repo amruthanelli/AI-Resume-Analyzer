@@ -2,6 +2,9 @@ import os
 import streamlit as st
 import PyPDF2
 from google import genai
+from dotenv import load_dotenv
+
+load_dotenv()
 
 st.set_page_config(page_title="AI Resume Analyzer", page_icon="📄")
 
@@ -11,7 +14,9 @@ st.write("Upload your resume and let AI analyze it.")
 # --- PASTE YOUR API KEY HERE ---
 # Replace the text inside the quotes with the actual long key you copied!
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
-
+if not GEMINI_API_KEY:
+    st.error("Gemini API key not found. Check your .env file.")
+    st.stop()
 uploaded_file = st.file_uploader(
     "Choose your Resume (PDF)",
     type=["pdf"]
@@ -24,8 +29,7 @@ if uploaded_file is not None:
     pdf_reader = PyPDF2.PdfReader(uploaded_file)
     extracted_text = ""
     for page in pdf_reader.pages:
-        extracted_text += page.extract_text()
-        
+        extracted_text += page.extract_text()  
     st.info("AI is analyzing your resume... Please wait a moment. 🤖")
     
     try:
